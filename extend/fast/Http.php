@@ -66,7 +66,7 @@ class Http
         $defaults[CURLOPT_FOLLOWLOCATION] = TRUE;
         $defaults[CURLOPT_RETURNTRANSFER] = TRUE;
         $defaults[CURLOPT_CONNECTTIMEOUT] = 3;
-        $defaults[CURLOPT_TIMEOUT] = 3;
+        $defaults[CURLOPT_TIMEOUT] = 30;
 
         // disable 100-continue
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:'));
@@ -140,7 +140,7 @@ class Http
         if (!$fp)
             return FALSE;
         //设置超时时间
-        stream_set_timeout($fp, 3);
+        stream_set_timeout($fp, 30);
         $out = "{$method} {$parts['path']}{$parts['query']} HTTP/1.1\r\n";
         $out.= "Host: {$parts['host']}\r\n";
         $out.= "Content-Type: application/x-www-form-urlencoded\r\n";

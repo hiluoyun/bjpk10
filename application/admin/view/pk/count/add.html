@@ -1,0 +1,40 @@
+<form id="add-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label for="c-position" class="control-label col-xs-12 col-sm-2">{:__('Position')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-position" data-rule="required" class="form-control" name="row[position]" type="text">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="c-type" class="control-label col-xs-12 col-sm-2">{:__('Type')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-type" data-rule="required" class="form-control" name="row[type]" type="text">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="c-repeat_num" class="control-label col-xs-12 col-sm-2">{:__('Repeat_num')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-repeat_num" data-rule="required" class="form-control" name="row[repeat_num]" type="number" value="0">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="c-raw_data" class="control-label col-xs-12 col-sm-2">{:__('Raw_data')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-raw_data" data-rule="required" class="form-control" name="row[raw_data]" type="text">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="c-status" class="control-label col-xs-12 col-sm-2">{:__('Status')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-status" data-rule="required" class="form-control" name="row[status]" type="number" value="1">
+        </div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>
