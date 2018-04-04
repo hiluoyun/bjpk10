@@ -18,6 +18,12 @@ class Code extends Backend
      * PkCode模型对象
      */
     protected $model = null;
+    protected $last_dx_status = [];
+    protected $last_ds_status = [];
+    protected $dx_repeat = [];
+    protected $ds_repeat = [];
+    protected $dx_str = "";
+    protected $ds_str = "";
 
     public function _initialize()
     {
@@ -36,7 +42,8 @@ class Code extends Backend
     {
 //        return 'hello world';
         $date = date('Y-m-d');
-        return $date;
+        $time = strtotime('2018-04-01 09:08:00');
+        return $time;
     }
 
 
@@ -94,6 +101,7 @@ class Code extends Backend
         return false;
     }
 
+
     public function Async_data($start='', $end='')
     {
         $url = 'http://localhost/bjpk10/public/index.php/admin/pk/code/spider_data';
@@ -120,9 +128,107 @@ class Code extends Backend
         return 'ok';
     }
 
-    public function count_data()
+    /**
+     * @param string $start
+     * @param string $end
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function count_data($start='', $end='')
+    {
+        $pos_key = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight',
+            'nine', 'ten'];
+        foreach($pos_key as $index)
+        {
+            $this->dx_repeat[$index] = 0;
+            $this->ds_repeat[$index] = 0;
+        }
+        $datetime = self::parse_datetime($start, $end);
+        $PkCode = new PkCode();
+        foreach($datetime as $item){
+            $begin = strtotime($item);
+            $over = strtotime( '+1 day', $begin) - 1;
+            $begin = date('Y-m-d H:i:s', $begin);
+            $over = date('Y-m-d H:i:s', $over);
+            $res = $PkCode->where('open_time', '>=', $begin)
+                ->where('open_time', '<=', $over)
+                ->order('open_time asc')
+                ->select();
+
+            if (!$res) continue;
+            $last_period = null;
+            $period = null;
+
+            $len = count($res);
+            for($i=0; $i<$len; $i++){
+                $item = $res[$i];
+                $period = $item['period'];
+                $open_time = $item['open_time'];
+                if ($last_period == null){
+                    $last_period = $period;
+                }else if($period - $last_period != 1){
+                    $this->save_lost_data($open_time, $last_period, $period);
+                }
+                $this->count_item_detail($item);
+            }
+        }
+    }
+
+    /**
+     * @param $data
+     */
+    public function count_item_detail($data)
+    {
+        $pos_key = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight',
+            'nine', 'ten'];
+        foreach($pos_key as $item){
+            $number = intval($data[$item]);
+            $dx_status = $number > 5 ? '大' : '小';
+            if(!array_key_exists($item, $this->last_dx_status)){
+                $this->last_dx_status[$item] = $dx_status;
+            }else if($this->last_dx_status[$item] != $dx_status){
+                $this->last_dx_status[$item] = $dx_status;
+
+            }else{
+                $this->dx_str .= $data['period'] . '(' . $number . ')';
+            }
+        }
+    }
+
+    public function save_lost_data($open_time, $last, $now)
     {
 
+    }
+
+    public function save_dx_data($period, $open_time, $repeat_num)
+    {
+
+    }
+
+    protected static function parse_datetime($start, $end)
+    {
+        $start = explode('-', $start);
+        $end = explode('-', $end);
+        $sy = intval($start[0]);
+        $sm = intval($start[1]);
+        $sd = intval($start[2]);
+        $ey = intval($end[0]);
+        $em = intval($end[1]);
+        $ed = intval($end[2]);
+        $data = [];
+        for($i = $sy; $i<= $ey; $i++) {
+            for ($j = $sm; $j <= $em; $j++) {
+                for ($k = $sd; $k <= $ed; $k++) {
+                    $year = $i < 10 ? '0'.$i : $i;
+                    $month = $j < 10 ? '0'.$j : $j;
+                    $day = $k < 10 ? '0'.$k : $k;
+                    $date = $year . '-' . $month . '-' . $day;
+                    $data[] = $date;
+                }
+            }
+        }
+        return $data;
     }
 
     public function list_data()
