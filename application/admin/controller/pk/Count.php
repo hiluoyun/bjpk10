@@ -183,11 +183,11 @@ class Count extends Backend
         return $data;
     }
 
-    public function list_repeat()
+    public function list_repeat($start='2018-01-01', $end='2018-04-05')
     {
         $data = [];
-        $sql = "select repeat_num, count(id) as total from pk_count where
- open_time>'2018-04-01 00:00:00' and open_time<'2018-04-06 23:59:59'  group by repeat_num";
+        $sql = "select repeat_num, count(id) as total from pk_count where open_time>'"
+            . $start . " 00:00:00' and open_time<'". $end ." 23:59:59'  group by repeat_num";
 //        $sql = "select repeat_num, count(id) as total from pk_count group by repeat_num";
         $res = Db::query($sql);
         foreach ($res as $row) {
@@ -227,7 +227,7 @@ class Count extends Backend
         $lost = 0;
         $data = $this->rowdata;
         if ($data==null){
-            $data = json_decode($this->list_repeat(), true);
+            $data = json_decode($this->list_repeat($start, $end), true);
         }
         for($i=1; $i<=3; $i++){
             if(array_key_exists($i, $data)){
